@@ -65,7 +65,11 @@ export const ESIResolvers: GraphQLResolverMap<ESIContext> = {
         corporation: async (character, args, context) => {
             return (context.dataSources.source as CorporationESI)
 				.getCorporation(character.corporationId);
-        }
+        },
+		miningObservers: async (character, args, context) => {
+            return (context.dataSources.source as CorporationESI)
+				.getCorporationMiningObservers(character.corporationId);
+        },
     }
 }
 

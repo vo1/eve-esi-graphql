@@ -57,6 +57,7 @@ const Schema = gql`
 	{
 		corporationId: String! @external
 		corporation: Corporation @requires(fields: "corporationId")
+		miningObservers: [MiningObserver] @requires(fields: "corporationId")
 	}
 `
 
