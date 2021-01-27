@@ -1,0 +1,17 @@
+{
+  "name": "ledger-tool-gw",
+  "version": "1.0.0",
+  "description": "",
+  "main": "build/index.js",
+  "dependencies": {
+    "@apollo/gateway": "^0.22.0",
+    "apollo-server": "^2.19.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "set NODE_ENV=dev && tsc && node build/index.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
