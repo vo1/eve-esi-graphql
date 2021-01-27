@@ -16,7 +16,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "set NODE_ENV=dev && tsc && node build/index.js"
+    "start": "tsc && node build/index.js"
   },
   "author": "",
   "license": "ISC"
