@@ -19,7 +19,7 @@ export interface ESIContext
     },
     ESI: {
         clientId: string,
-        secretKey: string,
+        clientSecret: string,
         scopes: string[],
     },
     token: string,
@@ -33,10 +33,6 @@ export class ESIDataSource extends RESTDataSource<ESIContext>
 	private ESILoginUrl = 'https://login.eveonline.com/v2/oauth/authorize?response_type=code&redirect_uri={{redirect_uri}}&client_id={{client_id}}&scope={{scopes}}&state={{state}}';
 	private ESITokenUrl = 'https://login.eveonline.com/v2/oauth/token';
 	private ESIVerifyUrl = 'https://login.eveonline.com/oauth/verify';
-	constructor()
-	{
-		super();
-    }
 
 	getSSOLoginURL(callbackUri: string, state?: string): string
 	{
@@ -55,9 +51,10 @@ export class ESIDataSource extends RESTDataSource<ESIContext>
 		this.authorizationToken = this.context.token;
 		return (await this.get(this.ESIVerifyUrl)).characterID;
 	}
+
 	async getAuthorizationToken(code: string): Promise<AuthToken>
 	{
-		this.authorizationToken = 'Basic ' + base64.encode(this.context.ESI.clientId + ':' + this.context.ESI.secretKey);
+		this.authorizationToken = 'Basic ' + base64.encode(this.context.ESI.clientId + ':' + this.context.ESI.clientSecret);
 		return this.post<AuthToken>(this.ESITokenUrl, JSON.stringify({grant_type: "authorization_code", code: code}));
 	}
 
@@ -69,16 +66,6 @@ export class ESIDataSource extends RESTDataSource<ESIContext>
 			request.headers.set('Authorization', this.authorizationToken);
 		};
 		request.body = humps.decamelizeKeys(request.body as Record<string, any>) as any;
-
-/*		if (this.context.sessionId) {
-			const cookie = request.headers.get('cookie') ?? '';
-			const cookieWithPhpSession = cookie
-				.split(';')
-				.filter(c => !c.includes('PHPSESSID'))
-				.join(';')
-				.concat(`;PHPSESSID=${this.context.sessionId}`);
-			request.headers.set('cookie', cookieWithPhpSession);
-		} */
 	}
 
 	async parseBody(response: Response): Promise<object | string>

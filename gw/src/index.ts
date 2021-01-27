@@ -1,12 +1,28 @@
 import { ApolloServer } from 'apollo-server'
-import { ApolloGateway } from '@apollo/gateway'
+import { ApolloGateway, RemoteGraphQLDataSource  } from '@apollo/gateway';
+
+const forwardHeaders = ["authorization"];
 
 const gateway = new ApolloGateway({
     serviceList: [
         { name: 'esi-character', url: 'http://127.0.0.1:4001' },
         { name: 'esi-corporation', url: 'http://127.0.0.1:4002' },
     ],
-})
+    buildService({ name, url }) {
+        return new RemoteGraphQLDataSource({
+            url,
+            willSendRequest<Context>({ request, context }) {
+                if (context.headers) {
+                    Object.entries(context.headers).forEach(([k, v]) => {
+                        if (forwardHeaders.indexOf(k) >= 0) {
+                            request.http.headers.set(k, v);
+                        }
+                    })
+                }
+            },
+        })
+    },
+});
 
 const server = new ApolloServer({
     gateway,
@@ -14,8 +30,9 @@ const server = new ApolloServer({
     playground: true,
     subscriptions: false,
     debug: true,
+    context: ( { req } ) => ({ headers: req.headers }),
 })
 
 server
-    .listen(process.env.PORT)
+    .listen(4000)
     .then(({ url }) => console.log(`Server ready at ${url}. `))

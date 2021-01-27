@@ -14,14 +14,14 @@ const server = new ApolloServer({
 	playground: false,
 	debug: true,
 
-	context: ({req}) => ({
+	context: ({req}) => {console.log(req.headers); return {
         token: req.headers['authorization'],
 		ESI: {
 			clientId: process.env.ESI_CLIENT_ID,
-			secretKey: process.env.ESI_CLIENT_SECRET,
+			clientSecret: process.env.ESI_CLIENT_SECRET,
 			scopes: [ 'esi-industry.read_corporation_mining.v1', 'esi-universe.read_structures.v1', 'esi-contracts.read_character_contracts.v1' ],
 		}
-    }),
+    }},
 });
 server
     .listen(process.env.PORT)
