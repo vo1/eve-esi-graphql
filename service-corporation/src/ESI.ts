@@ -8,7 +8,14 @@ export interface MiningObserver
 	lastUpdated: string;
 	observerType: string;
 }
-
+export interface MiningObserverEntry
+{
+	observerId: number;
+	lastUpdated: string;
+	quantity: number;
+	recordedCorporationId: number;
+	typeId: number;
+}
 export interface Corporation
 {
 	allianceId: number;
@@ -39,6 +46,19 @@ export const ESIResolvers: GraphQLResolverMap<ESIContext> = {
 			{ corporationId },
 			{ dataSources }
 		): Promise<Corporation> => (dataSources.source as CorporationESI).getCorporation(corporationId),
+
+		getCorporationMiningObservers: async(
+			_source,
+			{ corporationId },
+			{ dataSources }
+		): Promise<MiningObserver[]> => (dataSources.source as CorporationESI).getCorporationMiningObservers(corporationId),
+
+		getCorporationMiningObserverEntries: async(
+			_source,
+			{ corporationId, observerId },
+			{ dataSources }
+		): Promise<MiningObserverEntry[]> => (dataSources.source as CorporationESI).getCorporationMiningObserverEntries(corporationId, observerId),
+
 	},
 
 	Character: {
@@ -55,4 +75,14 @@ export class CorporationESI extends ESIDataSource
 	{
 		return this.query<Corporation>('corporations/:id/', corporationId);
 	}
+
+	getCorporationMiningObservers(corporationId: number): Promise<MiningObserver[]>
+	{
+		return this.query<MiningObserver[]>(`corporation/:id/mining/observers/`, corporationId);
+	}
+	getCorporationMiningObserverEntries(corporationId: number, observerId: number): Promise<MiningObserverEntry[]>
+	{
+		return this.query<MiningObserverEntry[]>(`corporation/${corporationId}/mining/observers/:id`, observerId);
+	}
+
 }

@@ -11,7 +11,24 @@ const Schema = gql`
         empty: String
     }
 
-	type Corporation @key (fields: "id") {
+	type MiningObserver @key (fields: "observerId")
+	{
+		observerId: ID!
+		lastUpdated: String
+		observerType: String
+	}
+
+	type MiningObserverEntry
+	{
+		characterId: Int
+		lastUpdated: String
+		quantity: Int
+		recordedCorporationId: Int
+		typeId: Int
+	}
+
+	type Corporation @key (fields: "id")
+	{
 		id: ID!
 		allianceId: Int
 		ceoId: Int
@@ -29,11 +46,15 @@ const Schema = gql`
 		warEligible: Boolean
 	}
 
-	extend type Query {
+	extend type Query
+	{
 		getCorporation(corporationId: ID!): Corporation
+		getCorporationMiningObservers(corporationId: ID!): [MiningObserver]
+		getCorporationMiningObserverEntries(corporationId: ID!, observerId: ID!): [MiningObserverEntry]
 	}
 
-	extend type Character @key (fields: "corporationId") {
+	extend type Character @key (fields: "corporationId")
+	{
 		corporationId: String! @external
 		corporation: Corporation @requires(fields: "corporationId")
 	}

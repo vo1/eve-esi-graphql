@@ -28,7 +28,7 @@ export interface ESIContext
 export class ESIDataSource extends RESTDataSource<ESIContext>
 {
 	protected token:AuthToken = {};
-	private authorizationToken: string = '';
+	private oneTimeAuthorizationToken: string = '';
 	private API:string = 'https://esi.evetech.net/latest/';
 	private ESILoginUrl = 'https://login.eveonline.com/v2/oauth/authorize?response_type=code&redirect_uri={{redirect_uri}}&client_id={{client_id}}&scope={{scopes}}&state={{state}}';
 	private ESITokenUrl = 'https://login.eveonline.com/v2/oauth/token';
@@ -48,13 +48,12 @@ export class ESIDataSource extends RESTDataSource<ESIContext>
 
 	async verifyToken(): Promise<number>
 	{
-		this.authorizationToken = this.context.token;
 		return (await this.get(this.ESIVerifyUrl)).characterID;
 	}
 
 	async getAuthorizationToken(code: string): Promise<AuthToken>
 	{
-		this.authorizationToken = 'Basic ' + base64.encode(this.context.ESI.clientId + ':' + this.context.ESI.clientSecret);
+		this.oneTimeAuthorizationToken = 'Basic ' + base64.encode(this.context.ESI.clientId + ':' + this.context.ESI.clientSecret);
 		return this.post<AuthToken>(this.ESITokenUrl, JSON.stringify({grant_type: "authorization_code", code: code}));
 	}
 
@@ -62,9 +61,13 @@ export class ESIDataSource extends RESTDataSource<ESIContext>
 	{
 		request.headers.set('accept', 'application/json');
 		request.headers.set('content-type', 'application/json');
-		if (this.authorizationToken.length > 0) {
-			request.headers.set('Authorization', this.authorizationToken);
+		if (this.context.token.length > 0) {
+			request.headers.set('Authorization', this.context.token);
 		};
+		if (this.oneTimeAuthorizationToken.length > 0) {
+			request.headers.set('Authorization', this.oneTimeAuthorizationToken);
+			this.oneTimeAuthorizationToken = '';
+		}
 		request.body = humps.decamelizeKeys(request.body as Record<string, any>) as any;
 	}
 
@@ -77,16 +80,19 @@ export class ESIDataSource extends RESTDataSource<ESIContext>
 		return humps.camelizeKeys(parsedResponse);
 	}
 
-	protected async query<TResult = any>(path: string, id?: number): Promise<TResult>
+	protected async query<TResult = any>(path: string, id?: number, fieldName?: string): Promise<TResult>
 	{
 		let url:string = this.API + path;
 		if (typeof(id) !== 'undefined') {
 			url = url.replace(':id', id.toString());
 		}
-		let response = await this.get(url);
-		if (typeof(id) !== 'undefined') {
-			response.id = id;
+		if (typeof(fieldName) === 'undefined') {
+			fieldName = 'id';
 		}
+		let response = await this.get(url);
+		if (typeof(response) === 'object') {
+			response[fieldName] = id;
+		};
 		return response;
 	}
 }
