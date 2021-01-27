@@ -20,7 +20,6 @@ export interface ESIContext
     ESI: {
         clientId: string,
         secretKey: string,
-        callbackUri: string,
         scopes: string[],
     },
     token: string,
