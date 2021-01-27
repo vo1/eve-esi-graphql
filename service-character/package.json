@@ -8,6 +8,7 @@
     "apollo-datasource-rest": "^0.9.7",
     "apollo-server": "^2.19.2",
     "base-64": "^1.0.0",
+    "dotenv": "^8.2.0",
     "graphql-type-json": "^0.3.2",
     "humps": "^2.0.1"
   },

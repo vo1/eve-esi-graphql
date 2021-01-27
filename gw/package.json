@@ -5,7 +5,8 @@
   "main": "build/index.js",
   "dependencies": {
     "@apollo/gateway": "^0.22.0",
-    "apollo-server": "^2.19.2"
+    "apollo-server": "^2.19.2",
+    "dotenv": "^8.2.0"
   },
   "devDependencies": {},
   "scripts": {

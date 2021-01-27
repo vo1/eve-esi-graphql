@@ -1,5 +1,6 @@
 import { ApolloServer } from 'apollo-server'
 import { ApolloGateway } from '@apollo/gateway'
+const env = require('dotenv').config().parsed
 
 const gateway = new ApolloGateway({
     serviceList: [
@@ -17,5 +18,5 @@ const server = new ApolloServer({
 })
 
 server
-    .listen(4000)
+    .listen(env.PORT)
     .then(({ url }) => console.log(`Server ready at ${url}. `))
