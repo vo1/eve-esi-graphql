@@ -1,0 +1,23 @@
+{
+  "name": "eve-esi-graphql-character",
+  "version": "1.0.0",
+  "description": "",
+  "main": "build/index.js",
+  "dependencies": {
+    "@apollo/federation": "^0.21.0",
+    "apollo-datasource-rest": "^0.9.7",
+    "apollo-server": "^2.19.2",
+    "base-64": "^1.0.0",
+    "graphql-type-json": "^0.3.2",
+    "humps": "^2.0.1"
+  },
+  "devDependencies": {
+    "@types/humps": "^2.0.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "tsc && node build/index.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
