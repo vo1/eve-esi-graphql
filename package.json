@@ -1,0 +1,24 @@
+{
+  "name": "eve-esi-graphql-svc",
+  "version": "1.0.0",
+  "description": "ESI GraphQL Service",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "pm2": "^4.5.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "pm2 start ecosystem-config.js --update-env",
+    "stop": "pm2 stop ecosystem-config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vo1/eve-esi-graphql.git"
+  },
+  "author": "Vo1",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vo1/eve-esi-graphql/issues"
+  },
+  "homepage": "https://github.com/vo1/eve-esi-graphql#readme"
+}
