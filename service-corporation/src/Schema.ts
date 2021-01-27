@@ -33,8 +33,8 @@ const Schema = gql`
 		getCorporation(corporationId: ID!): Corporation
 	}
 
-	extend type Character {
-		corporationId: String @external
+	extend type Character @key (fields: "corporationId") {
+		corporationId: String! @external
 		corporation: Corporation @requires(fields: "corporationId")
 	}
 `

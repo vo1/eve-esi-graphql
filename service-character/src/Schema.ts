@@ -11,13 +11,13 @@ const Schema = gql`
 		expires: String
 	}
 
-	type Character @key (fields: "id") {
+	type Character @key (fields: "id") @key (fields: "corporationId") {
 		id: ID!
 		allianceId: Int
 		ancestryId: Int
 		birthday: String
 		bloodlineId: Int
-		corporationId: String
+		corporationId: String!
 		description: String
 		factionId: Int
 		gender: String
