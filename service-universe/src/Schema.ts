@@ -1,11 +1,11 @@
 import { gql } from 'apollo-server'
 
 const Schema = gql`
-	type TypeUniversalData @key (fields: "id")
+	type TypeUniversalData @key (fields: "id") @key (fields: "marketGroupId")
 	{
 		id: ID!
 		groupId: Int
-		marketGroupId: Int
+		marketGroupId: ID!
 		name: String
 		volume: Float
 		portionSize: Float
@@ -23,6 +23,7 @@ const Schema = gql`
 	extend type Query
 	{
 		getUniverseStructure(structureId: ID!): [StructureUniversalData]
+		getUniverseType(typeId: ID!): TypeUniversalData
 	}
 
 	extend type MiningObserver @key (fields: "observerId")

@@ -8,6 +8,7 @@ const gateway = new ApolloGateway({
         { name: 'esi-character', url: 'http://127.0.0.1:4001' },
         { name: 'esi-corporation', url: 'http://127.0.0.1:4002' },
         { name: 'esi-universe', url: 'http://127.0.0.1:4003' },
+		{ name: 'esi-market', url: 'http://127.0.0.1:4004' },
     ],
     buildService({ name, url }) {
         return new RemoteGraphQLDataSource({
