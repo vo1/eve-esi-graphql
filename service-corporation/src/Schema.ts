@@ -18,13 +18,13 @@ const Schema = gql`
 		observerType: String
 	}
 
-	type MiningObserverEntry
+	type MiningObserverEntry @key (fields: "characterId") @key (fields: "typeId")
 	{
-		characterId: Int
+		characterId: ID!
+		typeId: ID!
 		lastUpdated: String
 		quantity: Int
 		recordedCorporationId: Int
-		typeId: Int
 	}
 
 	type Corporation @key (fields: "id")

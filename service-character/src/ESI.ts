@@ -50,6 +50,13 @@ export const ESIResolvers: GraphQLResolverMap<ESIContext> = {
 			{ dataSources }
 		): Promise<Character> => (dataSources.source as CharacterESI).getCharacter(characterId),
 	},
+
+	MiningObserverEntry: {
+        character: async (miningObserver, args, context) => {
+            return (context.dataSources.source as CharacterESI)
+				.getCharacter(miningObserver.characterId);
+        }
+    }
 }
 
 export class CharacterESI extends ESIDataSource

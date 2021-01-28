@@ -11,7 +11,8 @@ const Schema = gql`
 		expires: String
 	}
 
-	type Character @key (fields: "id") @key (fields: "corporationId") {
+	type Character @key (fields: "id") @key (fields: "corporationId")
+	 {
 		id: ID!
 		allianceId: Int
 		ancestryId: Int
@@ -25,6 +26,12 @@ const Schema = gql`
 		raceId: Int
 		securityStatus: Int
 		title: String
+	}
+
+	extend type MiningObserverEntry @key (fields: "characterId")
+	{
+		characterId: ID! @external
+		character: Character @requires(fields: "characterId")
 	}
 
 	extend type Query {
