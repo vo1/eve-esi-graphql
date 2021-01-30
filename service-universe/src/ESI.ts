@@ -39,7 +39,6 @@ export const ESIResolvers: GraphQLResolverMap<ESIContext> = {
 			{ typeId },
 			{ dataSources }
 		): Promise<TypeUniversalData> => (dataSources.source as UniverseESI).getUniverseType(typeId),
-
 	},
 
 	MiningObserver: {
@@ -48,12 +47,14 @@ export const ESIResolvers: GraphQLResolverMap<ESIContext> = {
 				.getUniverseStructure(miningObserver.observerId)
         )
     },
+
 	MiningObserverEntry: {
         type: async (miningObserverEntry, args, context) => (
             (context.dataSources.source as UniverseESI)
 				.getUniverseType(miningObserverEntry.typeId)
         )
     },
+
 	MaterialType: {
 		type: async (typeEntry, args, context) => (
 			(context.dataSources.source as UniverseESI)
