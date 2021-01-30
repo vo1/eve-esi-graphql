@@ -12,7 +12,6 @@ const server = new ApolloServer({
 	dataSources: () => ({source: new UniverseESI()}),
 	introspection: false,
 	playground: false,
-	debug: true,
 
 	context: ({req}) => ({
         token: req.headers['authorization'],

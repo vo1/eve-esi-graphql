@@ -1,4 +1,4 @@
-import { ESIDataSource, ESIContext, AuthToken } from "./ESIDataSource";
+import { ESIDataSource, ESIContext, AuthToken } from 'apollo-datasource-esi';
 import { GraphQLResolverMap } from 'apollo-graphql';
 import { GraphQLJSON } from 'graphql-type-json';
 
@@ -43,17 +43,23 @@ export const ESIResolvers: GraphQLResolverMap<ESIContext> = {
 	},
 
 	MiningObserver: {
-        structure: async (miningObserver, args, context) => {
-            return (context.dataSources.source as UniverseESI)
-				.getUniverseStructure(miningObserver.observerId);
-        }
+        structure: async (miningObserver, args, context) => (
+            (context.dataSources.source as UniverseESI)
+				.getUniverseStructure(miningObserver.observerId)
+        )
     },
 	MiningObserverEntry: {
-        type: async (miningObserverEntry, args, context) => {
-            return (context.dataSources.source as UniverseESI)
-				.getUniverseType(miningObserverEntry.typeId);
-        }
-    }
+        type: async (miningObserverEntry, args, context) => (
+            (context.dataSources.source as UniverseESI)
+				.getUniverseType(miningObserverEntry.typeId)
+        )
+    },
+	MaterialType: {
+		type: async (typeEntry, args, context) => (
+			(context.dataSources.source as UniverseESI)
+				.getUniverseType(typeEntry.materialTypeID)
+        )
+	}
 }
 
 export class UniverseESI extends ESIDataSource

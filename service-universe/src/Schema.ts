@@ -37,6 +37,12 @@ const Schema = gql`
 		typeId: ID! @external
 		type: TypeUniversalData @requires(fields: "typeId")
 	}
+
+	extend type MaterialType @key (fields: "materialTypeID")
+	{
+		materialTypeID: ID! @external
+		type: TypeUniversalData @requires(fields: "materialTypeID")
+	}
 `
 
 export default Schema;

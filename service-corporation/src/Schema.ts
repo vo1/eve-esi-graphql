@@ -11,6 +11,12 @@ const Schema = gql`
         empty: String
     }
 
+	input DateRange
+	{
+		from: String
+		to: String
+	}
+
 	type MiningObserver @key (fields: "observerId")
 	{
 		observerId: ID!
@@ -50,7 +56,7 @@ const Schema = gql`
 	{
 		getCorporation(corporationId: ID!): Corporation
 		getCorporationMiningObservers(corporationId: ID!): [MiningObserver]
-		getCorporationMiningObserverEntries(corporationId: ID!, observerId: ID!): [MiningObserverEntry]
+		getCorporationMiningObserverEntries(corporationId: ID!, observerId: ID!, dateRange: DateRange): [MiningObserverEntry]
 	}
 
 	extend type Character @key (fields: "corporationId")

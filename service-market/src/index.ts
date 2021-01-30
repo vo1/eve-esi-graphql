@@ -12,7 +12,6 @@ const server = new ApolloServer({
 	dataSources: () => ({source: new MarketESI()}),
 	introspection: false,
 	playground: false,
-	debug: true,
 
 	context: ({req}) => ({
         token: req.headers['authorization'],
