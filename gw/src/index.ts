@@ -9,6 +9,7 @@ const gateway = new ApolloGateway({
         { name: 'esi-corporation', url: 'http://127.0.0.1:4002' },
         { name: 'esi-universe', url: 'http://127.0.0.1:4003' },
 		{ name: 'esi-market', url: 'http://127.0.0.1:4004' },
+        { name: 'esi-sde', url: 'http://127.0.0.1:4005' },
     ],
     buildService({ name, url }) {
         return new RemoteGraphQLDataSource({
@@ -28,10 +29,10 @@ const gateway = new ApolloGateway({
 
 const server = new ApolloServer({
     gateway,
-    introspection: true,
-    playground: true,
+    introspection: (process.env.APOLLO_INTROSPECTION == '1'),
+    playground: (process.env.APOLLO_PLAYGROUND == '1'),
     subscriptions: false,
-    debug: true,
+    debug: false,
     context: ( { req } ) => ({ headers: req.headers }),
 })
 
