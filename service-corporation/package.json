@@ -5,7 +5,7 @@
   "main": "build/index.js",
   "dependencies": {
     "@apollo/federation": "^0.21.0",
-    "apollo-datasource-esi": "^1.1.0",
+    "apollo-datasource-eve-esi": "^1.2.0",
     "apollo-server": "^2.19.2",
     "base-64": "^1.0.0",
     "graphql-type-json": "^0.3.2",

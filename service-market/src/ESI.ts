@@ -1,4 +1,4 @@
-import { ESIDataSource, ESIContext, AuthToken } from 'apollo-datasource-esi';
+import { ESIDataSource, ESIContext, AuthToken } from 'apollo-datasource-eve-esi';
 import { GraphQLResolverMap } from 'apollo-graphql';
 import { GraphQLJSON } from 'graphql-type-json';
 

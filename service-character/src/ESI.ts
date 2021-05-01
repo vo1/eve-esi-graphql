@@ -1,22 +1,12 @@
-import { ESIDataSource, ESIContext, AuthToken } from 'apollo-datasource-esi';
+import { ESIDataSource, ESIContext, AuthToken, Character } from 'apollo-datasource-eve-esi';
 import { GraphQLResolverMap } from 'apollo-graphql';
 import { GraphQLJSON } from 'graphql-type-json';
 
-export interface Character
+export interface AssetType
 {
-	id: number;
-	allianceId: number;
-	ancestryId: number;
-	birthday: string;
-	bloodlineId: number;
-	corporationId: number;
-	description: string;
-	factionId: number;
-	gender: string;
-	name: string;
-	raceId: number;
-	securityStatus: number;
-	title: string;
+	isBlueprintCopy: boolean;
+  	quantity: number;
+  	typeId: number;
 }
 
 export const ESIResolvers: GraphQLResolverMap<ESIContext> = {
@@ -51,6 +41,13 @@ export const ESIResolvers: GraphQLResolverMap<ESIContext> = {
 		): Promise<Character> => (dataSources.source as CharacterESI).getCharacter(characterId),
 	},
 
+	ActivityMaterialType: {
+		characterAssets: async(activityMaterialType, args, context) => (
+			(context.dataSources.source as CharacterESI)
+				.getCharacterAssets(activityMaterialType.typeID)
+		)
+	},
+
 	MiningObserverEntry: {
         character: async (miningObserver, args, context) => {
             return (context.dataSources.source as CharacterESI)
@@ -71,9 +68,20 @@ export class CharacterESI extends ESIDataSource
 		return this.query('characters/:id/', characterId);
 	}
 
-	async getSelf(): Promise<Character>
+	async getCharacterAssets(typeID?: string): Promise<AssetType[]>
 	{
-		let characterId: number = await this.verifyToken();
-		return this.getCharacter(characterId)
+		await this.getSelf();
+		let result: AssetType[] = [];
+		let response = await this.query(`characters/:id/assets/`, this.me.id);
+		if (typeof(typeID) !== 'undefined') {
+			response.forEach( (asset:AssetType) => {
+				if (asset.typeId.toString() == typeID) {
+					result.push(asset);
+				}
+			});
+		} else {
+
+		}
+		return result;
 	}
 }

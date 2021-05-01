@@ -1,4 +1,4 @@
-import { ESIContext, ESIDataSource } from 'apollo-datasource-esi';
+import { ESIContext, ESIDataSource } from 'apollo-datasource-eve-esi';
 import { GraphQLResolverMap } from 'apollo-graphql';
 import { GraphQLJSON } from 'graphql-type-json';
 import { SDE, MaterialType, BlueprintType } from './SDE';
@@ -18,12 +18,12 @@ export const ESIResolvers: GraphQLResolverMap<ESIContext> = {
 			{ typeId },
 			{ dataSources }
 		): Promise<MaterialType[]> => (dataSources.source as SdeESI).getMaterials(typeId),
-		findBlueprints: async(
+		blueprints: async(
 			_source,
 			{ name },
 			{ dataSources }
 		): Promise<BlueprintType[]> => (dataSources.source as SdeESI).findBlueprints(name),
-		getBlueprint: async(
+		blueprint: async(
 			_source,
 			{ typeId },
 			{ dataSources }

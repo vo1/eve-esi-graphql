@@ -8,14 +8,14 @@ const Schema = gql`
 		quantity: Float
 	}
 
-	type ActivityMaterialType
+	type ActivityMaterialType @key (fields: "typeID")
 	{
 		typeID: ID!
 		name: String
 		quantity: Float
 	}
 
-	type BlueprintType @key (fields: "materialTypeID")
+	type BlueprintType @key (fields: "typeID")
 	{
 		typeID: ID!
 		input: [ActivityMaterialType]
@@ -25,8 +25,8 @@ const Schema = gql`
 	extend type Query
 	{
 		getMaterials(typeId: ID!): [MaterialType]
-		findBlueprints(name: String): [BlueprintType]
-		getBlueprint(typeId: String): BlueprintType
+		blueprints(name: String): [BlueprintType]
+		blueprint(typeId: ID!): BlueprintType
 	}
 
 	extend type MiningObserverEntry @key (fields: "typeId")

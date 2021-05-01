@@ -37,6 +37,7 @@ export class SDE
     private static instance: SDE;
     materials = new Map<string, MaterialType[]>();
 	blueprints = new Map<string, BlueprintType>();
+	blueprintOutputMap = new Map<string, string>();
 
     constructor()
     {
@@ -65,6 +66,9 @@ export class SDE
 				<BlueprintType>blueprints[id]
 			)
         );
+		for (let [key , value] of this.blueprints) {
+			this.blueprintOutputMap.set(value.output.typeID.toString(), key);
+		}
         SDE.instance = this;
     }
 
@@ -86,6 +90,10 @@ export class SDE
 
 	public getBlueprint(typeId: string): BlueprintType
 	{
-		return <BlueprintType>this.blueprints.get(typeId);
+		let key = this.blueprintOutputMap.get(typeId);
+		if (key) {
+			return <BlueprintType>this.blueprints.get(key);
+		}
+		throw new Error("Type not found.");
 	}
 }

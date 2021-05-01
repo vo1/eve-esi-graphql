@@ -52,6 +52,20 @@ const Schema = gql`
 		warEligible: Boolean
 	}
 
+	type CorporationAsset @key (fields: "itemId")
+	{
+		itemId: ID!
+		typeId: Int
+		quantity: Int
+		locationType: String
+	}
+
+	extend type ActivityMaterialType @key (fields: "typeID")
+	{
+		typeID: ID! @external
+		corporationAssets: [CorporationAsset]  @requires(fields: "typeID")
+	}
+
 	extend type Query
 	{
 		getCorporation(corporationId: ID!): Corporation

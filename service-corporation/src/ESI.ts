@@ -1,4 +1,4 @@
-import { ESIDataSource, ESIContext, AuthToken } from 'apollo-datasource-esi';
+import { ESIDataSource, ESIContext, AuthToken, Character } from 'apollo-datasource-eve-esi';
 import { GraphQLResolverMap } from 'apollo-graphql';
 import { GraphQLJSON } from 'graphql-type-json';
 
@@ -21,6 +21,13 @@ export interface MiningObserverEntry
 	recordedCorporationId: number;
 	typeId: number;
 }
+export interface AssetType
+{
+	isBlueprintCopy: boolean;
+  	quantity: number;
+  	typeId: number;
+}
+
 export interface Corporation
 {
 	allianceId: number;
@@ -65,7 +72,12 @@ export const ESIResolvers: GraphQLResolverMap<ESIContext> = {
 		): Promise<MiningObserverEntry[]> => (dataSources.source as CorporationESI).getCorporationMiningObserverEntries(corporationId, observerId, dateRange),
 
 	},
-
+	ActivityMaterialType: {
+		corporationAssets: async(activityMaterialType, args, context) => (
+			(context.dataSources.source as CorporationESI)
+				.getCorporationAssets(activityMaterialType.typeID)
+		)
+	},
 	Character: {
         corporation: async (character, args, context) => {
             return (context.dataSources.source as CorporationESI)
@@ -119,4 +131,20 @@ export class CorporationESI extends ESIDataSource
 		return result;
 	}
 
+	async getCorporationAssets(typeID?: string): Promise<AssetType[]>
+	{
+		await this.getSelf();
+		let result: AssetType[] = [];
+		let response = await this.query(`corporations/:id/assets/`, this.me.corporationId);
+		if (typeof(typeID) !== 'undefined') {
+			response.forEach( (asset:AssetType) => {
+				if (asset.typeId.toString() == typeID) {
+					result.push(asset);
+				}
+			});
+		} else {
+
+		}
+		return result;
+	}
 }

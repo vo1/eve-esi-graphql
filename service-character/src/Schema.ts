@@ -11,6 +11,20 @@ const Schema = gql`
 		expires: String
 	}
 
+	type CharacterAsset @key (fields: "itemId")
+	{
+		itemId: ID!
+		typeId: Int
+		quantity: Int
+		locationType: String
+	}
+
+	extend type ActivityMaterialType @key (fields: "typeID")
+	{
+		typeID: ID! @external
+		characterAssets: [CharacterAsset]  @requires(fields: "typeID")
+	}
+
 	type Character @key (fields: "id") @key (fields: "corporationId")
 	 {
 		id: ID!
