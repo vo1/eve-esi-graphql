@@ -1,7 +1,7 @@
 import { ESIContext, ESIDataSource } from 'apollo-datasource-esi';
 import { GraphQLResolverMap } from 'apollo-graphql';
 import { GraphQLJSON } from 'graphql-type-json';
-import { SDE, MaterialType } from './SDE';
+import { SDE, MaterialType, BlueprintType } from './SDE';
 
 import YAML from 'yaml';
 const fs = require('fs');
@@ -18,6 +18,16 @@ export const ESIResolvers: GraphQLResolverMap<ESIContext> = {
 			{ typeId },
 			{ dataSources }
 		): Promise<MaterialType[]> => (dataSources.source as SdeESI).getMaterials(typeId),
+		findBlueprints: async(
+			_source,
+			{ name },
+			{ dataSources }
+		): Promise<BlueprintType[]> => (dataSources.source as SdeESI).findBlueprints(name),
+		getBlueprint: async(
+			_source,
+			{ typeId },
+			{ dataSources }
+		): Promise<BlueprintType> => (dataSources.source as SdeESI).getBlueprint(typeId),
 	},
 	MiningObserverEntry: {
 		refine: async (entry, args, context) => ( (context.dataSources.source as SdeESI).getMaterials(entry.typeId) )
@@ -31,5 +41,13 @@ export class SdeESI extends ESIDataSource
 	async getMaterials(typeId: string): Promise<MaterialType[]>
 	{
 		return this.sde.getMaterials(typeId);
+	}
+	async findBlueprints(name: string): Promise<BlueprintType[]>
+	{
+		return this.sde.findBlueprints(name);
+	}
+	async getBlueprint(typeId: string): Promise<BlueprintType>
+	{
+		return this.sde.getBlueprint(typeId);
 	}
 }
