@@ -1,0 +1,3 @@
+SET PORT=4000
+TIMEOUT /NOBREAK /T 5
+yarn start
