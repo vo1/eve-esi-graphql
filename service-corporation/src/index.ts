@@ -20,9 +20,8 @@ const server = new ApolloServer({
 			clientSecret: process.env.ESI_CLIENT_SECRET,
 			scopes: [
 				'esi-industry.read_corporation_mining.v1',
-				'esi-universe.read_structures.v1',
-				'esi-contracts.read_character_contracts.v1',
-				'esi-assets.read_corporation_assets.v1'
+				'esi-assets.read_corporation_assets.v1',
+				'esi-corporations.read_structures.v1'
 			],
 		}
     }),

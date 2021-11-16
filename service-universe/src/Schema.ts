@@ -1,6 +1,13 @@
 import { gql } from 'apollo-server'
 
 const Schema = gql`
+
+	extend type ServicedScopesType  @key (fields: "_")
+	{
+		_: ID! @external
+		universe: [String] @requires(fields: "_")
+	}
+
 	type TypeUniversalData @key (fields: "id") @key (fields: "marketGroupId")
 	{
 		id: ID!
@@ -30,6 +37,12 @@ const Schema = gql`
 	{
 		observerId: ID! @external
 		structure: StructureUniversalData @requires(fields: "observerId")
+	}
+
+	extend type MiningExtraction @key (fields: "structureId")
+	{
+		structureId: ID! @external
+		structure: StructureUniversalData @requires(fields: "structureId")
 	}
 
 	extend type MiningObserverEntry @key (fields: "typeId")

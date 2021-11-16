@@ -9,6 +9,10 @@ const fs = require('fs');
 export const ESIResolvers: GraphQLResolverMap<ESIContext> = {
 	JSON: GraphQLJSON,
 
+	ServicedScopesType: {
+		sde: async(src, args, context):Promise<string[]> => context.dataSources.source.context.ESI.scopes
+	},
+
 	Mutation: {
 	},
 

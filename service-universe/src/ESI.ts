@@ -24,6 +24,10 @@ export interface StructureUniversalData
 export const ESIResolvers: GraphQLResolverMap<ESIContext> = {
 	JSON: GraphQLJSON,
 
+	ServicedScopesType: {
+		universe: async(src, args, context):Promise<string[]> => context.dataSources.source.context.ESI.scopes
+	},
+
 	Mutation: {
 	},
 
@@ -45,6 +49,13 @@ export const ESIResolvers: GraphQLResolverMap<ESIContext> = {
         structure: async (miningObserver, args, context) => (
             (context.dataSources.source as UniverseESI)
 				.getUniverseStructure(miningObserver.observerId)
+        )
+    },
+
+	MiningExtraction: {
+        structure: async (MiningExtraction, args, context) => (
+            (context.dataSources.source as UniverseESI)
+				.getUniverseStructure(MiningExtraction.structureId)
         )
     },
 

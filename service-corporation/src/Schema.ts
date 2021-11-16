@@ -3,6 +3,12 @@ import { gql } from 'apollo-server'
 const Schema = gql`
 	scalar JSON
 
+	extend type ServicedScopesType  @key (fields: "_")
+	{
+		_: ID! @external
+		corporation: [String] @requires(fields: "_")
+	}
+
     type Query {
         empty: String
     }
@@ -33,6 +39,36 @@ const Schema = gql`
 		recordedCorporationId: Int
 	}
 
+	type StructureService
+	{
+		name: String
+		state: String
+	}
+
+	type Structure
+	{
+		corporationId: ID!
+		structureId: ID!
+		typeId: ID!
+		name: String
+		fuelExpires: String
+		services: [StructureService]
+		state: String
+		stateTimerStart: String
+		stateTimerEnd: String
+		unanchorsAt: String
+		miningExtraction: MiningExtraction
+	}
+
+	type MiningExtraction @key (fields: "structureId")
+	{
+		chunkArrivalTime: String
+		extractionStartTime: String
+		moonId: ID!
+		naturalDecayTime: String
+		structureId: ID!
+	}
+	
 	type Corporation @key (fields: "id")
 	{
 		id: ID!
@@ -69,6 +105,8 @@ const Schema = gql`
 	extend type Query
 	{
 		getCorporation(corporationId: ID!): Corporation
+		getCorporationStructures(corporationId: ID!): [Structure]
+		getCorporationMiningExtractions(corporationId: ID!, dateRange: DateRange): [MiningExtraction]
 		getCorporationMiningObservers(corporationId: ID!): [MiningObserver]
 		getCorporationMiningObserverEntries(corporationId: ID!, observerId: ID!, dateRange: DateRange): [MiningObserverEntry]
 	}
@@ -77,7 +115,9 @@ const Schema = gql`
 	{
 		corporationId: String! @external
 		corporation: Corporation @requires(fields: "corporationId")
+		structures: [Structure] @requires(fields: "corporationId")
 		miningObservers: [MiningObserver] @requires(fields: "corporationId")
+		miningExtractions: [MiningExtraction] @requires(fields: "corporationId")
 	}
 `
 

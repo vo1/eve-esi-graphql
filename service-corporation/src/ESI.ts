@@ -21,13 +21,39 @@ export interface MiningObserverEntry
 	recordedCorporationId: number;
 	typeId: number;
 }
+export interface MiningExtraction
+{
+	moonId: number;
+	structureId: number;
+	chunkArrivalTime: string;
+	extractionStartTime: string;
+	naturalDecayTime: string;
+}
 export interface AssetType
 {
 	isBlueprintCopy: boolean;
   	quantity: number;
   	typeId: number;
 }
-
+export interface StructureService
+{
+	name: string;
+	state: string;
+}
+export interface Structure
+{
+	corporationId: number;
+	structureId: number;
+	typeId: number;
+	name: string;
+	fuelExpires: string;
+	services: StructureService[];
+	state: string;
+	stateTimerStart: string;
+	stateTimerEnd: string;
+	unanchorsAt: string;
+	miningExtraction: MiningExtraction;
+}
 export interface Corporation
 {
 	allianceId: number;
@@ -48,6 +74,10 @@ export interface Corporation
 
 export const ESIResolvers: GraphQLResolverMap<ESIContext> = {
 	JSON: GraphQLJSON,
+
+	ServicedScopesType: {
+		corporation: async(src, args, context):Promise<string[]> => context.dataSources.source.context.ESI.scopes
+	},
 
 	Mutation: {
 	},
@@ -71,6 +101,17 @@ export const ESIResolvers: GraphQLResolverMap<ESIContext> = {
 			{ dataSources }
 		): Promise<MiningObserverEntry[]> => (dataSources.source as CorporationESI).getCorporationMiningObserverEntries(corporationId, observerId, dateRange),
 
+		getCorporationMiningExtractions: async(
+			_source,
+			{ corporationId, dateRange },
+			{ dataSources }
+		): Promise<MiningExtraction[]> => (dataSources.source as CorporationESI).getCorporationMiningExtractions(corporationId, dateRange),
+
+		getCorporationStructures: async(
+			_source,
+			{ corporationId },
+			{ dataSources }
+		): Promise<Structure[]> => (dataSources.source as CorporationESI).getCorporationStructures(corporationId),
 	},
 	ActivityMaterialType: {
 		corporationAssets: async(activityMaterialType, args, context) => (
@@ -83,10 +124,18 @@ export const ESIResolvers: GraphQLResolverMap<ESIContext> = {
             return (context.dataSources.source as CorporationESI)
 				.getCorporation(character.corporationId);
         },
+		structures: async (character, args, context) => {
+            return (context.dataSources.source as CorporationESI)
+				.getCorporationStructures(character.corporationId);
+        },
 		miningObservers: async (character, args, context) => {
             return (context.dataSources.source as CorporationESI)
 				.getCorporationMiningObservers(character.corporationId);
         },
+		miningExtractions:  async (character, args, context) => {
+			return (context.dataSources.source as CorporationESI)
+				.getCorporationMiningExtractions(character.corporationId);
+		}
     }
 }
 
@@ -131,6 +180,25 @@ export class CorporationESI extends ESIDataSource
 		return result;
 	}
 
+	async getCorporationStructures(corporationId: number): Promise<Structure[]>
+	{
+		let response = await this.query<Structure[]>(`corporations/:id/structures/`, corporationId);
+		let extractors = await this.getCorporationMiningExtractions(corporationId);
+		response.forEach((v) => {
+			extractors.forEach((e) => {
+				if (e.structureId == v.structureId) {
+					v.miningExtraction = e;
+				}
+			});
+		});
+		response.forEach((v) => {
+			if (v.miningExtraction == null) {
+				v.miningExtraction = <MiningExtraction>{};
+			}
+		})
+		return response;
+	}
+
 	async getCorporationAssets(typeID?: string): Promise<AssetType[]>
 	{
 		await this.getSelf();
@@ -145,6 +213,34 @@ export class CorporationESI extends ESIDataSource
 		} else {
 
 		}
+		return result;
+	}
+	
+	async getCorporationMiningExtractions(corporationId: number, dateRange?: DateRange): Promise<MiningExtraction[]>
+	{
+		function compare(a: MiningExtraction, b: MiningExtraction) {
+			if (a.chunkArrivalTime > b.chunkArrivalTime) {
+				return 1;
+			} else if (a.chunkArrivalTime < b.chunkArrivalTime) {
+				return -1;
+			}
+			return 0;
+		}
+		let response = await this.query<MiningExtraction[]>(`corporation/:id/mining/extractions`, corporationId),
+			result: MiningExtraction[] = [];
+		if ((typeof(dateRange) !== 'undefined') && dateRange.from && dateRange.to) {
+			let from = Date.parse(dateRange.from),
+				to = Date.parse(dateRange.to) + 24* 60 * 60 * 1000;
+			response.forEach( (v) => {
+				let dt = Date.parse(v.chunkArrivalTime);
+				if (dt >= from && dt <= to) {
+					result.push(v);
+				}
+			})
+		} else {
+			result = response;
+		}
+		result.sort(compare);
 		return result;
 	}
 }

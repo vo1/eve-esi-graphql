@@ -2,6 +2,12 @@ import { gql } from 'apollo-server'
 
 const Schema = gql`
 
+	extend type ServicedScopesType  @key (fields: "_")
+	{
+		_: ID! @external
+		sde: [String] @requires(fields: "_")
+	}
+
 	type MaterialType @key (fields: "materialTypeID")
 	{
 		materialTypeID: ID!

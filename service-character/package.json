@@ -5,14 +5,14 @@
   "main": "build/index.js",
   "dependencies": {
     "@apollo/federation": "^0.21.0",
-    "apollo-datasource-eve-esi": "^1.1.0",
-    "apollo-server": "^2.19.2",
+    "apollo-datasource-eve-esi": "^1.2.9",
+    "apollo-server": "^2.25.3",
     "base-64": "^1.0.0",
     "graphql-type-json": "^0.3.2",
     "humps": "^2.0.1"
   },
   "devDependencies": {
-    "@types/humps": "^2.0.0"
+    "@types/humps": "^2.0.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

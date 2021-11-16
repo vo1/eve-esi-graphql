@@ -3,7 +3,18 @@ import { gql } from 'apollo-server'
 const Schema = gql`
 	scalar JSON
 
-	type AuthToken {
+	type ServicedScopesType
+	{
+		_: ID!
+	}
+
+	extend type ServicedScopesType  @key (fields: "_")
+	{
+		character: [String]
+	}
+
+	type AuthToken
+	{
 		accessToken: String
 		tokenType: String
 		expiresIn: Int
@@ -42,6 +53,15 @@ const Schema = gql`
 		title: String
 	}
 
+	type Notification {
+		notificationId: ID!
+		senderId: ID!
+		senderType: String
+		text: String
+		timestamp: String
+		type: String
+	}
+	
 	extend type MiningObserverEntry @key (fields: "characterId")
 	{
 		characterId: ID! @external
@@ -49,10 +69,12 @@ const Schema = gql`
 	}
 
 	extend type Query {
-		getLoginUrl(callbackUrl: String): String
+		scopes: ServicedScopesType
+		loginUrl(scopes:[String]!, callbackUrl: String!): String
 		getAuthorizationToken(code: String!): AuthToken
-		getSelf: Character
+		me: Character
 		getCharacter(characterId: ID!): Character
+		getNotifications(characterId: ID!, type: String): [Notification]
 	}
 `
 

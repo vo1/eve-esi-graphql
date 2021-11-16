@@ -13,6 +13,10 @@ export interface MarketGroup
 export const ESIResolvers: GraphQLResolverMap<ESIContext> = {
 	JSON: GraphQLJSON,
 
+	ServicedScopesType: {
+		market: async(src, args, context):Promise<string[]> => context.dataSources.source.context.ESI.scopes
+	},
+
 	Mutation: {
 	},
 

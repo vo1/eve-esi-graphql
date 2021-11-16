@@ -1,6 +1,13 @@
 import { gql } from 'apollo-server'
 
 const Schema = gql`
+
+	extend type ServicedScopesType  @key (fields: "_")
+	{
+		_: ID! @external
+		market: [String] @requires(fields: "_")
+	}
+
 	type MarketGroup @key (fields: "id")
 	{
 		id: ID!

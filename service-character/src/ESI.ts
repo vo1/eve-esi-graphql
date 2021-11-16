@@ -1,4 +1,4 @@
-import { ESIDataSource, ESIContext, AuthToken, Character } from 'apollo-datasource-eve-esi';
+import { ESIDataSource, ESIContext, AuthToken, Character, ScopesType } from 'apollo-datasource-eve-esi';
 import { GraphQLResolverMap } from 'apollo-graphql';
 import { GraphQLJSON } from 'graphql-type-json';
 
@@ -9,26 +9,52 @@ export interface AssetType
   	typeId: number;
 }
 
+export interface Notification
+{
+	notificationId: number;
+	senderId: number;
+	senderType: string;
+	text: string;
+	timestamp: string;
+	type: string;
+}
+
+export interface ChunkInfo
+{
+	typeId: number;
+	quantity: number;
+}
+
 export const ESIResolvers: GraphQLResolverMap<ESIContext> = {
 	JSON: GraphQLJSON,
+
+	ServicedScopesType: {
+		character: async(src, args, context):Promise<string[]> => context.dataSources.source.context.ESI.scopes
+	},
 
 	Mutation: {
 	},
 
 	Query: {
+		scopes: async(
+				_source,
+				{ },
+				{ dataSources }
+			): Promise<ScopesType> => (dataSources.source as CharacterESI).getScopes(),
+
 		getAuthorizationToken: async(
 			_source,
 			{ code },
 			{ dataSources }
 		): Promise<AuthToken> => (dataSources.source as CharacterESI).getAuthorizationToken(code),
 
-		getLoginUrl: async(
+		loginUrl: async(
 			_source,
-			{ callbackUrl },
+			{ scopes, callbackUrl },
 			{ dataSources }
-		): Promise<string> => (dataSources.source as CharacterESI).getLoginUrl(callbackUrl),
+		): Promise<string> => (dataSources.source as CharacterESI).getLoginUrl(scopes, callbackUrl),
 
-		getSelf: async(
+		me: async(
 			_source,
 			{ },
 			{ dataSources }
@@ -39,6 +65,12 @@ export const ESIResolvers: GraphQLResolverMap<ESIContext> = {
 			{ characterId },
 			{ dataSources }
 		): Promise<Character> => (dataSources.source as CharacterESI).getCharacter(characterId),
+		
+		getNotifications: async(
+			_source,
+			{ characterId, type },
+			{ dataSources }		
+		): Promise<Notification[]> => (dataSources.source as CharacterESI).getNotifications(characterId, type),
 	},
 
 	ActivityMaterialType: {
@@ -58,9 +90,15 @@ export const ESIResolvers: GraphQLResolverMap<ESIContext> = {
 
 export class CharacterESI extends ESIDataSource
 {
-	getLoginUrl(callbackUrl: string): Promise<string>
+	/*parseChunkNotification(info: string): [ChunkInfo]
 	{
-		return new Promise((r) => r(this.getSSOLoginURL(callbackUrl)));
+		let [, oreVolumes] = info.split('oreVolumeByType:');
+		oreVolumes = oreVolumes.split("structureName:"
+	}*/
+	
+	getLoginUrl(scopes: string[], callbackUrl: string): Promise<string>
+	{
+		return new Promise((r) => r(this.getSSOLoginURL(callbackUrl, undefined , scopes)));
 	}
 
 	async getCharacter(characterId: number): Promise<Character>
@@ -74,13 +112,29 @@ export class CharacterESI extends ESIDataSource
 		let result: AssetType[] = [];
 		let response = await this.query(`characters/:id/assets/`, this.me.id);
 		if (typeof(typeID) !== 'undefined') {
-			response.forEach( (asset:AssetType) => {
+			response.forEach( (asset: AssetType) => {
 				if (asset.typeId.toString() == typeID) {
 					result.push(asset);
 				}
 			});
 		} else {
 
+		}
+		return result;
+	}
+
+	async getNotifications(characterId: number, type?: string): Promise<Notification[]>
+	{
+		let response: Notification[] = await this.query('characters/:id/notifications/', characterId);
+		let result: Notification[] = [];
+		if (typeof(type) !== 'undefined') {
+			response.forEach( (n: Notification) => {
+				if (n.type.toLowerCase() == type.toLowerCase()) {
+					result.push(n);
+				}
+			});
+		} else {
+			return response;
 		}
 		return result;
 	}
