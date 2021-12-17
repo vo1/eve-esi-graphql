@@ -19,7 +19,7 @@ export interface Notification
 	type: string;
 }
 
-export interface ChunkInfo
+export interface MiningExtractionResource
 {
 	typeId: number;
 	quantity: number;
@@ -80,6 +80,13 @@ export const ESIResolvers: GraphQLResolverMap<ESIContext> = {
 		)
 	},
 
+	MiningExtraction: {
+		resources: async(miningExtraction, args, context) =>(
+			(context.dataSources.source as CharacterESI)
+				.parseMiningExtractionNotifications(miningExtraction.structureId)
+		)
+	},
+
 	MiningObserverEntry: {
         character: async (miningObserver, args, context) => {
             return (context.dataSources.source as CharacterESI)
@@ -90,11 +97,41 @@ export const ESIResolvers: GraphQLResolverMap<ESIContext> = {
 
 export class CharacterESI extends ESIDataSource
 {
-	/*parseChunkNotification(info: string): [ChunkInfo]
+	async parseMiningExtractionNotifications(structureId: number): Promise<MiningExtractionResource[]>
 	{
-		let [, oreVolumes] = info.split('oreVolumeByType:');
-		oreVolumes = oreVolumes.split("structureName:"
-	}*/
+		let result: MiningExtractionResource[] = [];
+		let me: Character = await this.getSelf();
+		let notifications: Notification[] = await this.getNotifications(me.id, "MoonminingExtractionStarted");
+		let lastTimestamp = new Date(0);
+
+		notifications.forEach((n) => {
+			let str = n.text.replace(/(?:\r\n|\r|\n)/g, ' ');
+			let matches = str.match(/oreVolumeByType:[\s]*(?<ores>.*)?readyTime.*?structureID:[\s]*(?<structureId>[0-9]*).*/);
+			let dt = new Date(n.timestamp);
+			if (matches && matches.groups) {
+				let _structureId = parseInt(matches.groups['structureId'].trim()),
+					_ores = matches.groups['ores'];
+				if (lastTimestamp < dt) {
+					result = [];
+					lastTimestamp = dt;
+					if (structureId == _structureId) {
+						let oresSplit = _ores.match(/([0-9]*?: [0-9]*)/g);
+						if (oresSplit && oresSplit.length > 0) {
+							oresSplit.forEach((ore) => {
+								let [typeId, quantity] = ore.split(':');
+								let r: MiningExtractionResource = {
+									typeId: parseInt(typeId.trim()),
+									quantity: parseInt(quantity.trim())
+								};
+								result.push(r);
+							})
+						}
+					}
+				}
+			}
+		});
+		return result;
+	}
 	
 	getLoginUrl(scopes: string[], callbackUrl: string): Promise<string>
 	{

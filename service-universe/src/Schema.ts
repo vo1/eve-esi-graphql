@@ -45,6 +45,12 @@ const Schema = gql`
 		structure: StructureUniversalData @requires(fields: "structureId")
 	}
 
+	extend type MiningExtractionResource @key (fields: "typeId")
+	{
+		typeId: ID! @external
+		type: TypeUniversalData @requires(fields: "typeId")
+	}
+
 	extend type MiningObserverEntry @key (fields: "typeId")
 	{
 		typeId: ID! @external

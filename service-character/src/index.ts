@@ -19,7 +19,8 @@ const server = new ApolloServer({
 			clientId: process.env.ESI_CLIENT_ID,
 			clientSecret: process.env.ESI_CLIENT_SECRET,
 			scopes: [
-				'esi-contracts.read_character_contracts.v1'
+				'esi-contracts.read_character_contracts.v1',
+				'esi-characters.read_notifications.v1'
 			],
 		}
     }),

@@ -52,6 +52,12 @@ export const ESIResolvers: GraphQLResolverMap<ESIContext> = {
         )
     },
 
+	MiningExtractionResource: {
+		type: async (miningExtractionResource, args, context) => (
+            (context.dataSources.source as UniverseESI)
+				.getUniverseType(miningExtractionResource.typeId)
+        )
+	},
 	MiningExtraction: {
         structure: async (MiningExtraction, args, context) => (
             (context.dataSources.source as UniverseESI)

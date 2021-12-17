@@ -62,6 +62,18 @@ const Schema = gql`
 		type: String
 	}
 	
+	type MiningExtractionResource @key (fields: "typeId")
+	{
+		typeId: ID!
+		quantity: Int
+	}
+
+	extend type MiningExtraction @key (fields: "structureId")
+	{
+		structureId: ID! @external
+		resources: [MiningExtractionResource] @requires(fields: "structureId")
+	}
+
 	extend type MiningObserverEntry @key (fields: "characterId")
 	{
 		characterId: ID! @external

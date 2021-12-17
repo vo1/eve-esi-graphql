@@ -193,7 +193,7 @@ export class CorporationESI extends ESIDataSource
 		});
 		response.forEach((v) => {
 			if (v.miningExtraction == null) {
-				v.miningExtraction = <MiningExtraction>{};
+				v.miningExtraction = <MiningExtraction>{structureId: 0};
 			}
 		})
 		return response;
